@@ -3,34 +3,34 @@
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="等级名称" prop="name">
         <el-input
-            v-model="queryParams.name"
-            placeholder="请输入等级名称"
-            clearable
-            @keyup.enter="handleQuery"
+          v-model="queryParams.name"
+          placeholder="请输入等级名称"
+          clearable
+          @keyup.enter="handleQuery"
         />
       </el-form-item>
       <el-form-item label="护理计划ID" prop="lplanId">
         <el-input
-            v-model="queryParams.lplanId"
-            placeholder="请输入护理计划ID"
-            clearable
-            @keyup.enter="handleQuery"
+          v-model="queryParams.lplanId"
+          placeholder="请输入护理计划ID"
+          clearable
+          @keyup.enter="handleQuery"
         />
       </el-form-item>
       <el-form-item label="护理费用" prop="fee">
         <el-input
-            v-model="queryParams.fee"
-            placeholder="请输入护理费用"
-            clearable
-            @keyup.enter="handleQuery"
+          v-model="queryParams.fee"
+          placeholder="请输入护理费用"
+          clearable
+          @keyup.enter="handleQuery"
         />
       </el-form-item>
       <el-form-item label="等级说明" prop="description">
         <el-input
-            v-model="queryParams.description"
-            placeholder="请输入等级说明"
-            clearable
-            @keyup.enter="handleQuery"
+          v-model="queryParams.description"
+          placeholder="请输入等级说明"
+          clearable
+          @keyup.enter="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -42,95 +42,87 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            type="primary"
-            plain
-            icon="Plus"
-            @click="handleAdd"
-            v-hasPermi="['nursing:level:add']"
-        >新增
-        </el-button>
+          type="primary"
+          plain
+          icon="Plus"
+          @click="handleAdd"
+          v-hasPermi="['nursing:level:add']"
+        >新增</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="success"
-            plain
-            icon="Edit"
-            :disabled="single"
-            @click="handleUpdate"
-            v-hasPermi="['nursing:level:edit']"
-        >修改
-        </el-button>
+          type="success"
+          plain
+          icon="Edit"
+          :disabled="single"
+          @click="handleUpdate"
+          v-hasPermi="['nursing:level:edit']"
+        >修改</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="danger"
-            plain
-            icon="Delete"
-            :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermi="['nursing:level:remove']"
-        >删除
-        </el-button>
+          type="danger"
+          plain
+          icon="Delete"
+          :disabled="multiple"
+          @click="handleDelete"
+          v-hasPermi="['nursing:level:remove']"
+        >删除</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="warning"
-            plain
-            icon="Download"
-            @click="handleExport"
-            v-hasPermi="['nursing:level:export']"
-        >导出
-        </el-button>
+          type="warning"
+          plain
+          icon="Download"
+          @click="handleExport"
+          v-hasPermi="['nursing:level:export']"
+        >导出</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="levelList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="主键ID" align="center" prop="id"/>
-      <el-table-column label="等级名称" align="center" prop="name"/>
-      <el-table-column label="护理计划ID" align="center" prop="lplanId"/>
-      <el-table-column label="护理费用" align="center" prop="fee"/>
-      <el-table-column label="状态" align="center" prop="status"/>
-      <el-table-column label="等级说明" align="center" prop="description"/>
-      <el-table-column label="备注" align="center" prop="remark"/>
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column label="主键ID" align="center" prop="id" />
+      <el-table-column label="等级名称" align="center" prop="name" />
+      <el-table-column label="护理计划ID" align="center" prop="lplanId" />
+      <el-table-column label="护理费用" align="center" prop="fee" />
+      <el-table-column label="状态" align="center" prop="status" />
+      <el-table-column label="等级说明" align="center" prop="description" />
+      <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
-                     v-hasPermi="['nursing:level:edit']">修改
-          </el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
-                     v-hasPermi="['nursing:level:remove']">删除
-          </el-button>
+          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['nursing:level:edit']">修改</el-button>
+          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['nursing:level:remove']">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-
+    
     <pagination
-        v-show="total>0"
-        :total="total"
-        v-model:page="queryParams.pageNum"
-        v-model:limit="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      @pagination="getList"
     />
 
     <!-- 添加或修改护理等级对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="levelRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="等级名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入等级名称"/>
+          <el-input v-model="form.name" placeholder="请输入等级名称" />
         </el-form-item>
         <el-form-item label="护理计划ID" prop="lplanId">
-          <el-input v-model="form.lplanId" placeholder="请输入护理计划ID"/>
+          <el-input v-model="form.lplanId" placeholder="请输入护理计划ID" />
         </el-form-item>
         <el-form-item label="护理费用" prop="fee">
-          <el-input v-model="form.fee" placeholder="请输入护理费用"/>
+          <el-input v-model="form.fee" placeholder="请输入护理费用" />
         </el-form-item>
         <el-form-item label="等级说明" prop="description">
-          <el-input v-model="form.description" placeholder="请输入等级说明"/>
+          <el-input v-model="form.description" placeholder="请输入等级说明" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" placeholder="请输入备注"/>
+          <el-input v-model="form.remark" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -144,9 +136,9 @@
 </template>
 
 <script setup name="Level">
-import {listLevel, getLevel, delLevel, addLevel, updateLevel} from "@/api/nursing/level"
+import { listLevel, getLevel, delLevel, addLevel, updateLevel } from "@/api/nursing/level"
 
-const {proxy} = getCurrentInstance()
+const { proxy } = getCurrentInstance()
 
 const levelList = ref([])
 const open = ref(false)
@@ -171,24 +163,24 @@ const data = reactive({
   },
   rules: {
     name: [
-      {required: true, message: "等级名称不能为空", trigger: "blur"}
+      { required: true, message: "等级名称不能为空", trigger: "blur" }
     ],
     lplanId: [
-      {required: true, message: "护理计划ID不能为空", trigger: "blur"}
+      { required: true, message: "护理计划ID不能为空", trigger: "blur" }
     ],
     fee: [
-      {required: true, message: "护理费用不能为空", trigger: "blur"}
+      { required: true, message: "护理费用不能为空", trigger: "blur" }
     ],
     status: [
-      {required: true, message: "状态不能为空", trigger: "change"}
+      { required: true, message: "状态不能为空", trigger: "change" }
     ],
     createTime: [
-      {required: true, message: "创建时间不能为空", trigger: "blur"}
+      { required: true, message: "创建时间不能为空", trigger: "blur" }
     ],
   }
 })
 
-const {queryParams, form, rules} = toRefs(data)
+const { queryParams, form, rules } = toRefs(data)
 
 /** 查询护理等级列表 */
 function getList() {
@@ -285,13 +277,12 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const _ids = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除护理等级编号为"' + _ids + '"的数据项？').then(function () {
+  proxy.$modal.confirm('是否确认删除护理等级编号为"' + _ids + '"的数据项？').then(function() {
     return delLevel(_ids)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess("删除成功")
-  }).catch(() => {
-  })
+  }).catch(() => {})
 }
 
 /** 导出按钮操作 */
