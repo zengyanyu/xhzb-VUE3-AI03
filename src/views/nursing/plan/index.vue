@@ -33,8 +33,7 @@
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery"
         >搜索
-        </el-button
-        >
+        </el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
@@ -48,8 +47,7 @@
             @click="handleAdd"
             v-hasPermi="['elder:plan:add']"
         >新增
-        </el-button
-        >
+        </el-button>
       </el-col>
     </el-row>
 
@@ -95,8 +93,7 @@
               @click="handleUpdate(scope.row)"
               v-hasPermi="['elder:plan:edit']"
           >修改
-          </el-button
-          >
+          </el-button>
           <el-button
               link
               type="primary"
@@ -105,8 +102,7 @@
               @click="handleDelete(scope.row)"
               v-hasPermi="['elder:plan:remove']"
           >删除
-          </el-button
-          >
+          </el-button>
           <el-button
               link
               type="primary"
@@ -114,16 +110,14 @@
               @click="handleLook(scope.row)"
               v-hasPermi="['elder:plan:remove']"
           >查看
-          </el-button
-          >
+          </el-button>
           <el-button
               link
               type="primary"
               :icon="scope.row.status == 0 ? 'Unlock' : 'lock'"
               @click="handleEnable(scope.row)"
           >{{ scope.row.status == 1 ? '禁用' : '启用' }}
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -136,11 +130,11 @@
         @pagination="getNursingPalnList"
     />
 
-    <!-- //////////////////////////////// -->
+    <!--弹窗 -->
     <el-dialog
         title="新增护理计划"
         v-model="dialogVisible"
-        width="840"
+        width="900px"
         @close="cancel()"
     >
       <el-form
@@ -149,122 +143,139 @@
           :rules="rules"
           label-width="120px"
       >
-        <el-row gutter="10">
-          <el-col :span="24" class="elcolFlex">
-            <el-form-item label="护理计划名称：" prop="planName">
+        <!-- 基础信息：改为两行布局，不要挤在一行 -->
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="护理计划名称" prop="planName">
               <el-input
                   v-model="formData.planName"
                   :disabled="isLook"
+                  placeholder="请输入护理计划名称"
               ></el-input>
             </el-form-item>
-            <el-form-item label="状态：" prop="status">
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="状态" prop="status">
               <el-radio-group v-model="formData.status" :disabled="isLook">
                 <el-radio
                     v-for="dict in nursing_plan_status"
                     :value="dict.value"
-                    :label="dict.value"
                     :key="dict.value"
                 >{{ dict.label }}
-                </el-radio
-                >
+                </el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="排序：" prop="sortNo">
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="排序" prop="sortNo">
               <el-input-number
                   :disabled="isLook"
                   v-model="formData.sortNo"
                   :min="0"
-                  large-number
                   :max="999999"
                   :decimal-places="0"
+                  style="width:100%"
                   @blur="textBlurNo"
                   @change="textBlurNo"
               ></el-input-number>
             </el-form-item>
           </el-col>
+          <el-col :span="12"></el-col>
         </el-row>
 
-        <el-form-item label="护理项目：" prop="price">
-          <div class="info family">
-            <div class="tableHead">
-              <div>护理项目名称</div>
-              <div>期望服务时间</div>
-              <div>执行周期</div>
-              <div>执行频次(次)</div>
-              <div v-if="!isLook">操作</div>
-            </div>
-            <div class="tableBody">
-              <div
-                  class="tableColumn"
-                  v-for="(item, index) in nursingPalnList"
-                  :key="index"
-              >
-                <div class="column">
-                  <el-select
-                      :disabled="isLook"
-                      v-model="item.projectId"
-                      placeholder="请选择"
-                  >
-                    <el-option
-                        v-for="item in nursingProjectOptions"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                    ></el-option>
-                  </el-select>
-                </div>
-                <div class="column">
-                  <el-time-picker
-                      v-model="item.executeTime"
-                      format="HH:mm:ss"
-                      value-format="HH:mm:ss"
-                      :style="{ width: '100%' }"
-                      placeholder="请选择时间选择"
-                      :disabled="isLook"
-                      clearable
-                  ></el-time-picker>
-                </div>
-                <div class="column">
-                  <el-select
-                      v-model="item.executeCycle"
-                      placeholder="请选择"
-                      :disabled="isLook"
-                  >
-                    <el-option
-                        v-for="item in executeCycleOptions"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                    ></el-option>
-                  </el-select>
-                </div>
-                <div class="column">
-                  <el-input-number
-                      v-model="item.executeFrequency"
-                      :controls="false"
-                      :max="7"
-                      :min="1"
-                      :disabled="isLook"
+        <!--护理项目列表，改用el-table实现，不再手写div表格，布局更稳定 -->
+        <el-form-item label="护理项目" prop="projectPlans">
+          <el-table
+              :data="nursingPalnList"
+              border
+              size="small"
+              style="width:100%"
+          >
+            <el-table-column label="护理项目名称" min-width="180">
+              <template #default="{row}">
+                <el-select
+                    v-model="row.projectId"
+                    placeholder="请选择护理项目"
+                    :disabled="isLook"
+                    clearable
+                    style="width:100%"
+                >
+                  <el-option
+                      v-for="opt in nursingProjectOptions"
+                      :key="opt.value"
+                      :label="opt.label"
+                      :value="opt.value"
                   />
-                </div>
-                <div class="column" v-if="!isLook">
-                  <el-icon
-                      v-if="nursingPalnList.length > 1"
-                      @click="handleRowDel(item, index)"
-                      class="delect"
-                  >
-                    <Minus
-                    />
-                  </el-icon>
-                  <el-icon @click="handleRowAdd" class="add">
-                    <Plus/>
-                  </el-icon>
-                </div>
-              </div>
-            </div>
-          </div>
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column label="期望服务时间" min-width="140">
+              <template #default="{row}">
+                <el-time-picker
+                    v-model="row.executeTime"
+                    format="HH:mm:ss"
+                    value-format="HH:mm:ss"
+                    placeholder="请选择"
+                    clearable
+                    :disabled="isLook"
+                    style="width:100%"
+                />
+              </template>
+            </el-table-column>
+            <el-table-column label="执行周期" min-width="120">
+              <template #default="{row}">
+                <el-select
+                    v-model="row.executeCycle"
+                    placeholder="请选择"
+                    :disabled="isLook"
+                    clearable
+                    style="width:100%"
+                >
+                  <el-option
+                      v-for="opt in executeCycleOptions"
+                      :key="opt.value"
+                      :label="opt.label"
+                      :value="opt.value"
+                  />
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column label="执行频次(次)" min-width="120">
+              <template #default="{row}">
+                <el-input-number
+                    v-model="row.executeFrequency"
+                    :min="1"
+                    :max="7"
+                    :disabled="isLook"
+                    style="width:100%"
+                />
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="120" v-if="!isLook">
+              <template #default="{ $index }">
+                <el-button
+                    type="primary"
+                    link
+                    icon="Plus"
+                    @click="handleRowAdd"
+                >新增行
+                </el-button>
+                <el-button
+                    type="danger"
+                    link
+                    icon="Delete"
+                    :disabled="nursingPalnList.length <= 1"
+                    @click="handleRowDel(null, $index)"
+                >删除
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
         </el-form-item>
       </el-form>
+
       <div class="dialog-footer" v-if="!isLook">
         <el-button type="primary" @click="submitForm">确定</el-button>
         <el-button @click="cancel()">取消</el-button>
